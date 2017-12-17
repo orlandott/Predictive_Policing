@@ -1,108 +1,68 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-
 <head> 
-<h1 align = "center">Predictive Policing in SF</h1>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="./styles.css">
 </head>
 
-<style>
-
-.background {
-  fill: #B2EEFE;
-  pointer-events: all;
-}
-
-.map-layer {
-  fill: #fff;
-  stroke: #aaa;
-}
-
-.effect-layer{
-  pointer-events:none;
-}
-
-text{
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 300;
-}
-
-text.big-text{
-  font-size: 20px;
-  font-weight: 400;
-}
-
-.effect-layer text, text.dummy-text{
-  font-size: 12px;
-}
-
-
- #slider { 
-      text-align: bottom;
-      position: relative;
-      top: 5200px
-      width: 3900px;
-}
-
- labels { 
-      text-align: bottom;
-      position: absolute;
-      top: 5200px
-      width: 3900px;
-}
-
-</style>
 <body>
+<h1 align="center" >Predictive Policing in San Francisco</h1>
 
-
-
-
-
-<svg></svg>
-
-<div id = "explanation">
-  <text id="hour">While it's clear that you don't care about writes making it back to the original frame (since you overwrote the reference to it), unfortunately this pattern can not be differentiated from the first chained assignment example, hence the (false positive) warning. The potential for false positives is addressed in the docs on indexing, if you'd like to read further. You can safely disable this new warning with the following assignment.</text>
-
+<div id="explanation">
+  <text id="hour">
+  <p>
+  This is an interactive map that predicts crime in San Francisco. The data used to make the predictions was from 2016 and the "actual" number of crimes are from 2017.
+</p>
+  <p>
+   When you select a day of the week and an hour of the day, you can see how many crimes actually happened and compare it to the predictions I had made. As you can see, the predictions are close, with 86% accuracy in total. <br/> Even though I used very few inputs, the results seem accurate enough to send more police to areas which predict higher crime. However, this would quickly become a self-fulfilling prophecy. Predictive policing models are misguided, obscure, racist, and dangerous - a typical <a href="http://www.orlandotorres.org/books.html#wmd">Weapon of Math Destruction.</a> For a more in-depth explanation read my blog post <a href="url">here</a>
+ </p>
+   </text>
 </div>
 
-<div id="wrapper">	
-		<div id="map"></div>
-  <div id="slider" align="left">
-  <input id="timeslide" type="range"  axis = true min="0" max="24" step="1" value = "12"oninput="sliderChange(this.value)">
-  </input>
-  <output id="output"></output>
-  </div>
+<svg id="svg"></svg>
 
+<div id="wrapper">  
+  <div id="map"></div>
+  <div id="wrapper" align="center">
+    <div class = col-md-4>
+    <div id="para">
+      <p>Select the hour on the slider. Select a day of the week. Hover over the map to see actual crimes and predictions for each zip code. 
+      <hr>
+       Visualization by Orlando Torres.
+    </div>
+</div>
+  <input 
+    id="slider" 
+    type="range" 
+    min="0" 
+    max="23" 
+    step="1" 
+    value="11"
+    oninput="putNumerInOutput(this.value)"></input>
+  <output id="output">11</output>
+</div>
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://d3js.org/topojson.v2.min.js"></script>
 <script>
 
 
-
-
 // variables
 
-
-var init_hour = 0
-
-
-var width = 1160,
-    height = 640,
+var width = 1250,
+    height = 440,
     centered;
 
 var minimum = 0.002740, maximum = 0.621918;
 
 var minimumColor = "#F2D7D5", maximumColor = "#7B241C";
 
+var color = d3.scale.linear()
+    .domain([0.02, 0.60])
+    .range(['yellow', 'red']);
 
-// Define color scale
-var color = d3.scale.quantile()
-  .domain([0.002740,0.621918])
-  .range([minimumColor,maximumColor])
-  ;
 
 var projection = d3.geo.mercator()
-  .scale(205000)
+  .scale(140000)
   // Center the Map in SF
   .center([-122.42, 37.77])
   .translate([width / 2, height / 2]);
@@ -119,8 +79,7 @@ var svg = d3.select('svg')
 svg.append('rect')
   .attr('class', 'background')
   .attr('width', width)
-  .attr('height', height)
-  .on('click', clicked);
+  .attr('height', height);
 
 var g = svg.append('g');
 
@@ -130,12 +89,6 @@ var effectLayer = g.append('g')
 var mapLayer = g.append('g')
   .classed('map-layer', true);
 
-var dummyText = g.append('text')
-  .classed('dummy-text', true)
-  .attr('x', 10)
-  .attr('y', 30)
-  .style('opacity', 0);
-
 var bigText = g.append('text')
   .classed('big-text', true)
   .attr('x', 20)
@@ -143,167 +96,7 @@ var bigText = g.append('text')
 
 var features;
 
-
-
-  // Update color scale domain based on data
-color.domain([0.002740, 0.621918])
-
-
-
-
-// Load data
-d3.json('zipcodes.geojson', function(error, mapData) {
-  features = mapData.features;
-
-
-
-  // Draw each province as a path
-  mapLayer.selectAll('path')
-      .data(features)
-    .enter().append('path')
-      .attr('d', path)
-      .attr('vector-effect', 'non-scaling-stroke')
-      .style('fill', fillFn)
-      .on('mouseover', mouseover)
-      .on('mouseout', mouseout)
-      .on('click', clicked);
-});
-
-// Load crime data
-    
 var crime_data;
-
-d3.json("crime_predictions.json" , function(data) {
-	crime_data = data;
-	
-})
-
-	
-
-
-
-
-
-
-
-
-
-// Functions
-
-function sliderChange(val) {
-    document.getElementById('output').innerHTML = val,
-    fillFn();
-}
-
-
-// Get zip_code
-function nameFn(d){
-  return d && d.properties ? 
-
-   dayFn() + " " + slider.innerText.trim() + ":00" +
-
-   " Zip: " + d.properties.zip_code + "\n" +
-
-   " Actual: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["Crimes"] + 
-
-
-  " Predicted MLP: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["Predicted_mlp"] +
-
-  " Predicted XGB: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["Predicted_xgb"] : "no data";
-}
-
-// Get day of week
-function dayFn(){
-  for (i = 0; i < labels[0].length; i++) 
-    if (labels[0][i].checked) {
-        return labels[0][i].value
-}
-// get hour of day - not working
-function hourFn(){
-	return slider.innerText.replace(/ /g,'')
-}
-
-}
-
-// Get province name length
-function nameLength(d){
-  var n = nameFn(d);
-  return n ? n.length : 0;
-}
-
-function getCrimes(d){
-  return crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == element.zip})[0]["Crimes"];
-}
-
-// Get province color
-function fillFn(d){
-  return color(getCrimes(d));
-}
-
-// When clicked, zoom in
-function clicked(d) {
-  var x, y, k;
-
-  // Compute centroid of the selected path
-  if (d && centered !== d) {
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 4;
-    centered = d;
-  } else {
-    x = width / 2;
-    y = height / 2;
-    k = 1;
-    centered = null;
-  }
-
-  // Highlight the clicked province
-  mapLayer.selectAll('path')
-    .style('fill', function(d){return centered && d===centered ? '#D0D3D4' : fillFn(d);});
-
-  // Zoom
-  g.transition()
-    .duration(750)
-    .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
-}
-
-function mouseover(d){
-  // Highlight hovered province
-  d3.select(this).style('fill', 'grey')
-  zip = d.properties.zip
-  console.log("zip: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["zip"] +
-
-  	 " actual: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["Crimes"] +
-
-  	" predicted mlp: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["Predicted_mlp"] +
-
-  " predicted xgb: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == slider.innerText.trim() & element.zip == zip})[0]["Predicted_xgb"])
-  ;
-
-  // Draw effects
-  textArt(nameFn(d));
-}
-
-function mouseout(d){
-  // Reset province color
-  mapLayer.selectAll('path')
-    .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
-
-  // Remove effect text
-  effectLayer.selectAll('text').transition()
-    .style('opacity', 0)
-    .remove();
-
-  // Clear province name
-  bigText.text('');
-}
-
-// Gimmick
-// Just me playing around.
-// You won't need this for a regular map.
-
-
 
 
 var shapeData = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -311,7 +104,7 @@ var shapeData = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
     j = 1;  // Choose Monday as default
 
 // Create the shape selectors
-var form = d3.select("body").append("form");
+var form = d3.select("#wrapper").append("form");
 
 labels = form.selectAll("label")
     .data(shapeData)
@@ -320,15 +113,119 @@ labels = form.selectAll("label")
     .text(function(d) {return d;})
     .insert("input")
     .attr({
-
-        type: "radio",
-        class: "shape",
-        name: "mode",
-        value: function(d) {return d;}
+      type: "radio",
+      name: "mode",
+      value: function(d) {return d;}
     })
-    .property("checked", function(d) {return d;});
+    .property("checked", function(d) {return d;})
+    .on("click", updateMap);
 
-	  
+
+
+
+
+
+// Load data
+
+d3.json('zipcodes_geo.json', function(error, mapData) {
+  features = mapData.features;
+  // Draw each zip code as a path
+  mapLayer.selectAll('path')
+      .data(features)
+    .enter().append('path')
+      .attr('d', path)
+      .attr('vector-effect', 'non-scaling-stroke')
+      .style('fill', fillFn)
+      .on('mouseover', mouseover)
+      .on('mouseout', mouseout);
+});
+// Load crime data
+    
+var crime_data;
+d3.json("crime_predictions.json" , function(data) {
+  crime_data = data;
+  
+})
+
+
+// Functions
+
+function putNumerInOutput(val) {
+    document.getElementById('output').innerHTML = val,
+    //fillFn();
+        updateMap();
+}
+var zip,
+tmpObj;
+
+// Get zip_code
+function nameFn(d){
+  zip = d.properties.zip
+  return d && d.properties ? 
+
+   dayFn() + " " + hourFn() + ":00" +
+
+   " Zip: " + d.properties.zip_code + "\n" +
+
+   "  Actual: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"] + 
+
+  "   Predicted: " + crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Predicted_mlp"]  : "no data";
+}
+
+// Get day of week
+function dayFn(){
+  for (i = 0; i < labels[0].length; i++) 
+    if (labels[0][i].checked) {
+        return labels[0][i].value
+}}
+// get hour of day
+function hourFn(){
+	return slider.value
+}
+
+// get number of crimes for a zip code
+function getCrimes(d){
+  zip = d ? (d.properties ? (d.properties.zip ? d.properties.zip : zip) : zip) : zip;
+    //zip = d.properties.zip;
+  tmpObj = (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip}) ? (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0] ? (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"] ? crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"]: null) : null) : null);
+  return tmpObj ? tmpObj : 0.0;
+}
+
+
+// Get zip code color
+function fillFn(d){
+  return color(getCrimes(d));
+}
+
+function updateMap() {
+    mapLayer.selectAll('path')
+        .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+}
+
+
+function mouseover(d){
+  // Highlight hovered zip code
+  d3.select(this).style('fill', 'grey')
+  ;
+  // Draw effects
+  textArt(nameFn(d));
+  getCrimes()
+}
+
+function mouseout(d){
+  // Reset zip code color
+  mapLayer.selectAll('path')
+    .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+
+  // Remove effect text
+  effectLayer.selectAll('text').transition()
+    .style('opacity', 0)
+    .remove();
+
+  // Clear zip code name
+  bigText.text('');
+}
+
 
 function textArt(text){
   // Use random font
@@ -338,27 +235,6 @@ function textArt(text){
     .style('font-family', fontFamily)
     .text(text);
 
-  // Use dummy text to compute actual width of the text
-  // getBBox() will return bounding box
-  dummyText
-    .style('font-family', fontFamily)
-    .text(text);
-  var bbox = dummyText.node().getBBox();
-
-  var textWidth = bbox.width;
-  var textHeight = bbox.height;
-  var xGap = 3;
-  var yGap = 1;
-
 }
 
-
-
-
-
-
 </script>
-
-
-
-
