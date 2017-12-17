@@ -1,0 +1,106 @@
+#svg {
+  cursor: pointer;
+}
+
+.background {
+  fill: #B2EEFE;
+  pointer-events: all;
+}
+
+.map-layer {
+  fill: #fff;
+  stroke: #aaa;
+}
+
+#p{
+  font-size: 15px;
+
+}
+
+.effect-layer{
+  pointer-events:none;
+}
+
+h1 {
+    text-align: center;
+    font-size: 50px;
+    font-family: : "Helvetica";
+}
+
+#explanation{
+  width: 90%;
+  height: 20%;
+  font-size: : 30px;
+  font-weight: 300;
+}
+
+text{
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+}
+
+text.big-text{
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.effect-layer text, text.dummy-text{
+  font-size: 32px;
+}
+#wrapper {
+    width: 65%; /* Width of the outside container */
+}
+
+#slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 25px;  
+    margin: 14px; 
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition:fill 200ms ease-in-out;
+}
+
+#slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%; 
+    background: #4CAF50;
+    cursor: pointer;
+
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+label { 
+  font-size: 20px;
+  padding: 0 10px;
+}
+
+input[type=radio] {
+  height: 20px;
+  width: 20px;
+
+
+}
+
+input[type=range] {
+  height: 30 px 30px;
+  width: 456px;
+}
+
+.day-of-week {
+  color: aqua;
+}
