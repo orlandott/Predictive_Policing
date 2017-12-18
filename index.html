@@ -187,8 +187,10 @@ function hourFn(){
 function getCrimes(d){
   zip = d ? (d.properties ? (d.properties.zip ? d.properties.zip : zip) : zip) : zip;
     //zip = d.properties.zip;
-  tmpObj = (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip}) ? (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0] ? (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"] ? crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"]: null) : null) : null);
-  return tmpObj ? tmpObj : 0.0;
+    if(crime_data){
+        tmpObj = (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip}) ? (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0] ? (crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"] ? crime_data.filter(function(element){ return element.DayOfWeek == dayFn() & element.Hour == hourFn() & element.zip == zip})[0]["Crimes"]: null) : null) : null);
+    }
+    return tmpObj ? tmpObj : 0.0;
 }
 
 
