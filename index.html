@@ -132,7 +132,12 @@ labels = form.selectAll("label")
     .enter()
     .append("label");
 
-labels.append("input")
+labels.append("span")
+    .attr("class", "day-label")
+    .text(function(d) { return d; });
+
+// Insert radios before the span so labels refers to inputs (for dayFn)
+labels = labels.insert("input", "span")
     .attr({
       type: "radio",
       name: "mode",
@@ -140,10 +145,6 @@ labels.append("input")
     })
     .property("checked", function(d) {return d;})
     .on("click", updateMap);
-
-labels.append("span")
-    .attr("class", "day-label")
-    .text(function(d) { return d; });
 
 
 
