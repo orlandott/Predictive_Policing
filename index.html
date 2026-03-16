@@ -1,44 +1,65 @@
 <!DOCTYPE html>
 <head> 
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="./styles.css">
+  <title>Predictive Policing in San Francisco</title>
 </head>
 
 <body>
-<h1 align="center" >Predictive Policing in San Francisco</h1>
+<div id="page-container">
+  <h1>Predictive Policing in San Francisco</h1>
 
-<div id="explanation">
-  <text id="hour">
-  <p>
-  This is an interactive map that predicts crime in San Francisco. The data used to make the predictions was from 2016 and the "actual" number of crimes are from 2017.
-</p>
-  <p>
-   When you select a day of the week and an hour of the day, you can see how many crimes actually happened and compare it to the predictions I had made. As you can see, the predictions are close, with 86% accuracy in total. <br/> Even though I used very few inputs, the results seem accurate enough to send more police to areas which predict higher crime. However, this would quickly become a self-fulfilling prophecy. Predictive policing models are misguided, obscure, racist, and dangerous - a typical <a href="http://www.orlandotorres.org/books.html#wmd">Weapon of Math Destruction.</a> For a more in-depth explanation read my blog post <a href="http://www.orlandotorres.org/predictive-policing-sf.html">here</a>
- </p>
-   </text>
-</div>
+  <div id="explanation">
+    <p>
+      This is an interactive map that predicts crime in San Francisco. The data used to make the predictions was from 2016 and the "actual" number of crimes are from 2017.
+    </p>
+    <p>
+      When you select a day of the week and an hour of the day, you can see how many crimes actually happened and compare it to the predictions I had made. As you can see, the predictions are close, with 86% accuracy in total. <br/>
+      Even though I used very few inputs, the results seem accurate enough to send more police to areas which predict higher crime. However, this would quickly become a self-fulfilling prophecy. Predictive policing models are misguided, obscure, racist, and dangerous – a typical
+      <a href="http://www.orlandotorres.org/books.html#wmd">Weapon of Math Destruction.</a> For a more in-depth explanation read my blog post
+      <a href="http://www.orlandotorres.org/predictive-policing-sf.html">here</a>.
+    </p>
+  </div>
 
-<svg id="svg"></svg>
+  <div id="map-card">
+    <svg id="svg"></svg>
 
-<div id="wrapper">  
-  <div id="map"></div>
-  <div id="wrapper" align="center">
-    <div class = col-md-4>
-    <div id="para">
-      <p>Select the hour on the slider. Select a day of the week. Hover over the map to see actual crimes and predictions for each zip code. 
-      <hr>
-       Visualization by Orlando Torres.
+    <div id="wrapper">  
+      <div id="map"></div>
+
+      <div id="controls-row">
+        <div id="para">
+          <p>Select the hour on the slider and a day of the week. Hover over the map to see actual crimes and predictions for each zip code.</p>
+          <hr>
+          Visualization by Orlando Torres.
+        </div>
+
+        <div>
+          <input 
+            id="slider" 
+            type="range" 
+            min="0" 
+            max="23" 
+            step="1" 
+            value="11"
+            oninput="putNumerInOutput(this.value)">
+          <output id="output">11</output>
+        </div>
+      </div>
+
+      <div id="legend">
+        <div id="legend-caption">Predicted crime intensity</div>
+        <div style="flex:1;">
+          <div id="legend-bar"></div>
+          <div id="legend-labels">
+            <span>Lower</span>
+            <span>Higher</span>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-  <input 
-    id="slider" 
-    type="range" 
-    min="0" 
-    max="23" 
-    step="1" 
-    value="11"
-    oninput="putNumerInOutput(this.value)"></input>
-  <output id="output">11</output>
+  </div>
 </div>
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -109,9 +130,9 @@ var form = d3.select("#wrapper").append("form");
 labels = form.selectAll("label")
     .data(shapeData)
     .enter()
-    .append("label")
-    .text(function(d) {return d;})
-    .insert("input")
+    .append("label");
+
+labels.append("input")
     .attr({
       type: "radio",
       name: "mode",
@@ -119,6 +140,10 @@ labels = form.selectAll("label")
     })
     .property("checked", function(d) {return d;})
     .on("click", updateMap);
+
+labels.append("span")
+    .attr("class", "day-label")
+    .text(function(d) { return d; });
 
 
 
