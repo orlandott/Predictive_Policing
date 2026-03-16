@@ -227,13 +227,17 @@ input[type="radio"]:checked + span.day-label {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 14px;
   font-size: 13px;
   color: #cbd5e1;
 }
 
+#legend-bar-wrap {
+  width: 180px;
+  flex-shrink: 0;
+}
+
 #legend-bar {
-  flex: 1;
   height: 10px;
   border-radius: 999px;
   background: linear-gradient(90deg, #fef3c7, #f97316, #b91c1c);

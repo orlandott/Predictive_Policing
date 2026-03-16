@@ -44,13 +44,13 @@
             step="1" 
             value="11"
             oninput="putNumerInOutput(this.value)">
-          <output id="output">11</output>
+          <output id="output">11 AM</output>
         </div>
       </div>
 
       <div id="legend">
-        <div id="legend-caption">Predicted crime intensity</div>
-        <div style="flex:1;">
+        <span id="legend-caption">Predicted crime intensity</span>
+        <div id="legend-bar-wrap">
           <div id="legend-bar"></div>
           <div id="legend-labels">
             <span>Lower</span>
@@ -176,10 +176,17 @@ d3.json("crime_predictions.json" , function(data) {
 
 // Functions
 
+function hourToAmPm(h) {
+    h = parseInt(h, 10);
+    if (h === 0) return '12 AM';
+    if (h < 12) return h + ' AM';
+    if (h === 12) return '12 PM';
+    return (h - 12) + ' PM';
+}
+
 function putNumerInOutput(val) {
-    document.getElementById('output').innerHTML = val,
-    //fillFn();
-        updateMap();
+    document.getElementById('output').innerHTML = hourToAmPm(val);
+    updateMap();
 }
 var zip,
 tmpObj;
