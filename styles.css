@@ -207,7 +207,7 @@ input[type="radio"] {
   display: none;
 }
 
-input[type="radio"]:checked + span.day-label {
+label:has(input[type="radio"]:checked) {
   background: linear-gradient(90deg, #0ea5e9, #22c55e);
   border-color: transparent;
   color: #0b1120;

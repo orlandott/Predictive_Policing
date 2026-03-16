@@ -48,6 +48,8 @@
         </div>
       </div>
 
+      <div id="day-controls"></div>
+
       <div id="legend">
         <span id="legend-caption">Predicted crime intensity</span>
         <div id="legend-bar-wrap">
@@ -125,7 +127,7 @@ var shapeData = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
     j = 1;  // Choose Monday as default
 
 // Create the shape selectors
-var form = d3.select("#wrapper").append("form");
+var form = d3.select("#day-controls").append("form");
 
 labels = form.selectAll("label")
     .data(shapeData)
@@ -213,7 +215,8 @@ function dayFn(){
 }}
 // get hour of day
 function hourFn(){
-	return slider.value
+	var el = document.getElementById('slider');
+	return el ? el.value : 0;
 }
 
 // get number of crimes for a zip code
